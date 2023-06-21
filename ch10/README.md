@@ -120,6 +120,14 @@
     - マッピングしたメモリを表すスライスをそのまま返すから、Goの文法を使って自由にデータにアクセスできる
     - この節ではこれを使う
 
+- http://funini.com/kei/mmap/mmap_implementation.shtml が分かりやすかった
+
+TODO
+
+- メモ: Apache Lucene に MMapDirectory なんてものがありましたね
+  - https://lucene.apache.org/core/9_6_0/core/org/apache/lucene/store/MMapDirectory.html
+  - Java の場合ヒープ外のメモリを利用できる (GC の対象にならない) っていう利点もある
+
 
 ### 10.7 本章のまとめと次章予告
 
