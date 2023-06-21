@@ -74,11 +74,51 @@
 - メモ: サンプルそのままでは動かなかったので https://pkg.go.dev/golang.org/x/sys/windows を使うように書き換えた。
 
 ### 10.2.3 FileLock構造体の使い方
-- unix のサンプルは FileLock 構造体を使うようになってなかったから使うように書き換えた
-  - EINTR は https://blog.lufia.org/entry/2020/02/29/162727 を参照
-- windows のサンプルは、そのままでは動かなかったので https://pkg.go.dev/golang.org/x/sys/windows を使うように書き換えた。
+- メモ:
+  - unix のサンプルは FileLock 構造体を使うようになってなかったから使うように書き換えた
+    - EINTR は https://blog.lufia.org/entry/2020/02/29/162727 を参照
+  - windows のサンプルは、そのままでは動かなかったので https://pkg.go.dev/golang.org/x/sys/windows を使うように書き換えた。
+- マルチプラットフォームを実現するための手段
+  - Build Constraints
+    - コード先頭に `//go:build` に続けてビルド対象のプラットフォームを列挙したり、ファイル名に `_windows.go` のようなサフィックスを付ける
+      - Go 1.17 以前は `// +build` で指定
+    - POSIX 以外ではファイル名にサフィックスを付けるのが一般的
+    - POSIX では `//go:build unix` を指定する
+      - `_unix.go` というファイル名はすでに広く使われていて、後方互換性のためにコメントだけでしか使えない
+  - `runtime.GOOS` 定数を使って実行時に処理を分岐
+    - API 自体がプラットフォームによって異なる場合にはリンクエラーが発生する
+  - メモ: この手のコメント (directive) はまとまったドキュメントがない気がする
+    - build: 
+      - https://pkg.go.dev/cmd/go#hdr-Build_constraints
+      - https://go.googlesource.com/proposal/+/master/design/draft-gobuild.md
+      - `go help buildconstraint`
+    - compiler directive: 
+      - https://pkg.go.dev/cmd/compile#hdr-Compiler_Directives
+    - cgo:
+      - https://pkg.go.dev/cmd/cgo@go1.20.5
+    - generate: 
+      - https://pkg.go.dev/cmd/go#hdr-Generate_Go_files_by_processing_source
+      - `go help generate`
+    - embed:
+      - https://pkg.go.dev/embed
 
-
+## 10.3 ファイルのメモリへのマッピング（syscall.Mmap()）
+- これまで利用していた `os.File` は `io.Seeker` を満たしてるからランダムアクセスをする事はできる。が、読み込み位置を移動する必要がある
+- これを解消するには `syscall.Mmap()` システムコールを使う
+- これを使うと
+  - ファイルの中身をそのままメモリ上に展開できる
+  - メモリ上で書き換えた内容をそのままファイルに書き込むこともできる
+- マッピングという名前のとおり、ファイルとメモリの内容を同期させる
+- メモリマップドファイルとも呼ばれる
+- Windows でも `CreateFileMapping()`,  `MapViewOfFile()` API の組で同じことが実現できる
+- クロスプラットフォームなライブラリも何種類かある
+  - https://pkg.go.dev/golang.org/x/exp/mmap
+    - シンプル
+    - `io.ReaderAt` を満たす
+  - https://pkg.go.dev/github.com/edsrzf/mmap-go
+    - より柔軟で POSIX に近いインターフェイス
+    - マッピングしたメモリを表すスライスをそのまま返すから、Goの文法を使って自由にデータにアクセスできる
+    - この節ではこれを使う
 
 
 ### 10.7 本章のまとめと次章予告
