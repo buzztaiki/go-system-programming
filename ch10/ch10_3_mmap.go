@@ -11,7 +11,7 @@ import (
 func main() {
 	// テストデータを書き込み
 	var testData = []byte("0123456789ABCDEF")
-	var testPath = filepath.Join(os.TempDir(), "testdata")
+	var testPath = filepath.Join(os.TempDir(), "mmap_testdata")
 	err := ioutil.WriteFile(testPath, testData, 0644)
 	if err != nil {
 		panic(err)
