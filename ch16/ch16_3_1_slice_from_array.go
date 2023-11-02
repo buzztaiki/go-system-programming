@@ -16,4 +16,9 @@ func main() {
 
 	a0 := a[0]
 	fmt.Printf("&a0=%p, &a[0]=%p\n", &a0, &a[0])
+
+	b[1] = 10
+	fmt.Println(a)
+	fmt.Println(b)
+	fmt.Println(c)
 }

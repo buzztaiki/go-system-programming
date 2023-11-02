@@ -20,5 +20,10 @@ func main() {
 	pool.Put("manualy added: 2")
 	fmt.Println(pool.Get())
 	fmt.Println(pool.Get())
-	fmt.Println(pool.Get()) // これは新規作成
+	fmt.Println(pool.Get())
+	x := pool.Get()
+	fmt.Println(x)
+	pool.Put(x)
+	fmt.Println(pool.Get())
+	fmt.Println(pool.Get())
 }
